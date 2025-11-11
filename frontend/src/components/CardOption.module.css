@@ -1,0 +1,34 @@
+.cardOption {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    border-radius: 8px;
+    padding: 16px;
+    background-color: white;
+    cursor: pointer;
+}
+
+.radioContainer {
+    width: fit-content;
+}
+
+.radio {
+    width: 16px;
+    height: 16px;
+    border-radius: 100%;
+    background-color: #d9d9d9;
+}
+
+.radioSelected {
+    background-color: var(--primary);
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.title {
+    font-weight: 500;
+}

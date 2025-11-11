@@ -1,0 +1,50 @@
+.chat {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow: hidden;
+}
+
+.messagesContainer {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px 0;
+    overflow: auto;
+}
+
+.inputContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    height: fit-content;
+    padding: 16px;
+    background-color: var(--bg-gray);
+}
+
+.input {
+    flex: 1;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+    padding: 12px 8px;
+}
+
+.button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: none;
+    background-color: var(--primary);
+}
+
+.button > * {
+    width: 90%;
+    height: 90%;
+}

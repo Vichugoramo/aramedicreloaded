@@ -1,0 +1,91 @@
+.assistancePage {
+    height: 100%;
+}
+
+.availableClinicianContent {
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+    justify-content: space-around;
+    padding: 48px 0;
+}
+
+.clinicianAvailabilityContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-weight: bold;
+    text-align: center;
+    font-size: 20px;
+}
+
+.clinicianAvailabilityText {
+    color: var(--secondary);
+}
+
+.availableClinicianDescription {
+    text-align: center;
+    margin: 0 auto;
+    width: 90%;
+    font-size: 20px;
+}
+
+.busyClinicianView,
+.busyPatientView {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+}
+
+.busyClinicianContent,
+.busyPatientContent {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding-bottom: 18px;
+}
+
+.availablePatientView {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    height: 100%;
+    padding: 32px 0 24px 0;
+    background-color: var(--bg-gray);
+    overflow: auto;
+}
+
+.availablePatientFormLabelContainer {
+    display: flex;
+    flex-direction: column;
+    padding: 0 16px;
+    gap: 8px;
+    color: var(--secondary);
+}
+
+.availablePatientFormLabelTitle {
+    font-weight: bold;
+}
+
+.waitingPatientView {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    font-size: 20px;
+    text-align: center;
+}
+
+.waitingPatientBoldText {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-weight: bold;
+}
+
+.waitingPatientColorText {
+    color: var(--secondary);
+}

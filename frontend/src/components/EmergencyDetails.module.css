@@ -1,0 +1,26 @@
+.emergencyDetails {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    gap: 24px;
+    font-size: 18px;
+}
+
+.title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.details {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.type {
+    font-weight: 500;
+}
+
+.notes {
+    text-align: justify;
+}

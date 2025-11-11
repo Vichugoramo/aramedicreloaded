@@ -1,0 +1,8 @@
+{
+  "appId": "com.example.aramedic",
+  "appName": "Aramedic",
+  "webDir": "dist",
+  "android": {
+    "allowMixedContent": true
+  }
+}

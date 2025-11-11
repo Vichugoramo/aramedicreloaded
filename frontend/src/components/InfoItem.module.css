@@ -1,0 +1,12 @@
+.infoItem {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-size: 20px;
+    width: 90%;
+    margin: 0 auto;
+}
+
+.label {
+    color: var(--secondary);
+}

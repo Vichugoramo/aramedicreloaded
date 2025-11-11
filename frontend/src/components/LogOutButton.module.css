@@ -1,0 +1,8 @@
+.logOutButton {
+    width: fit-content;
+    margin: 0 auto;
+    color: var(--secondary);
+    text-align: center;
+    text-decoration: underline;
+    cursor: pointer;
+}

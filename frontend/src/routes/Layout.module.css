@@ -1,0 +1,11 @@
+.layout {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    height: 100%;
+}
+
+.contentContainer {
+    height: 100%;
+    overflow: hidden;
+}

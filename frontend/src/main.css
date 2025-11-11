@@ -1,0 +1,24 @@
+@import url("../node_modules/reset-css/reset.css");
+@import "leaflet/dist/leaflet.css";
+
+*, *::after, *::before {
+	box-sizing: border-box;
+}
+
+:root {
+	--primary: #242f9b;
+	--secondary: #4579ce;
+	--tertiary: #d4e1f5;
+	--accent: #ffd500;
+	--bg-blue: #ecf4ff;
+	--bg-gray: #ececec;
+}
+
+html, body, #root {
+	width: 100%;
+	height: 100%;
+	font-family: 'Roboto', Arial, sans-serif;
+	font-size: 18px;
+	color: black;
+	user-select: none;
+}

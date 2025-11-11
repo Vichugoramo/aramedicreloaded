@@ -1,0 +1,26 @@
+{
+  "name": "hospital_app",
+  "version": "1.0.0",
+  "description": "backend for hospital app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.810.0",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "hospital_app": "file:",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.12.0",
+    "nodemon": "^3.1.10",
+    "pdfkit": "^0.17.1",
+    "socket.io": "^4.8.1"
+  }
+}
