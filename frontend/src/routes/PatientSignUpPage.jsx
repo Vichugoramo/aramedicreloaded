@@ -5,12 +5,18 @@ import { BackButton } from '../components/BackButton';
 import { Input } from '../components/Input';
 import { SegmentedControl } from '../components/SegmentedControl';
 import { Dialog } from '@capacitor/dialog';
+import { useNavigate } from 'react-router';
 import { useAPI } from '../contexts/APIContext';
 import { useToken } from '../contexts/TokenContext';
 
 export const PatientSignUpPage = () => {
     const { fetchApi } = useAPI();
-    const { setToken } = useToken();
+    // NOTE: we don't set the token here because TokenProvider redirects
+    // automatically when setToken is called. Instead we pass the token
+    // to the Record page and set it there after the medical record is
+    // completed.
+    const { /* setToken */ } = useToken();
+    const navigate = useNavigate();
     const sexOptions = ['Masculino', 'Femenino'];
     const [formData, setFormData] = useState({
         name: '',
@@ -61,7 +67,8 @@ export const PatientSignUpPage = () => {
                     title: '¡Bienvenido!',
                     message: 'Registro exitoso.'
                 });
-                setToken(res.token);
+                // Navigate to the RecordPage and pass the token in location state
+                navigate('/signup-record', { state: { token: res.token } });
             })
             .catch(error => {
                 console.log(error.message);

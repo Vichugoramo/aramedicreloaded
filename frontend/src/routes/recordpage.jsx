@@ -7,36 +7,30 @@ import { SegmentedControl } from '../components/SegmentedControl';
 import { Dialog } from '@capacitor/dialog';
 import { useAPI } from '../contexts/APIContext';
 import { useToken } from '../contexts/TokenContext';
+import { useLocation } from 'react-router';
 
-export const PatientSignUpPage = () => {
+export const RecordPage = () => {
     const { fetchApi } = useAPI();
     const { setToken } = useToken();
-    const sexOptions = ['Masculino', 'Femenino'];
+    const location = useLocation();
+    // token passed from PatientSignUpPage after creating the patient
+    const tokenFromSignup = location?.state?.token;
+    const boxoptions = ['Si', 'No'];
     const [formData, setFormData] = useState({
-        name: '',
-        lastname: '',
-        curp: '',
-        sex: undefined,
-        age: '',
-        height: '',
-        weight: '',
-        telephone: '',
-        email: '',
-        password: ''
+        question1: undefined,
+        question2: undefined,
+        question3: undefined,
+        question4: undefined,
+        questionwrite: ''
     });
 
     const isFormDataValid = (formData) => {
         return (
-            formData.name &&
-            formData.lastname &&
-            formData.curp &&
-            formData.sex &&
-            formData.age &&
-            formData.height &&
-            formData.weight &&
-            formData.telephone &&
-            formData.email &&
-            formData.password
+            formData.question1 &&
+            formData.question2 &&
+            formData.question3 &&
+            formData.question4 &&
+            formData.questionwrite
         );
     }
 
@@ -49,19 +43,27 @@ export const PatientSignUpPage = () => {
             return;
         }
 
-        const requestBody = { ...formData }
-        requestBody.sex = formData.sex.toLowerCase() == 'masculino' ? 'M' : 'F';
-        requestBody.age = Number(formData.age);
-        requestBody.weight = Number(formData.weight);
-        requestBody.height = Number(formData.height);
+    const requestBody = { ...formData }
+        requestBody.question1 = formData.question1.toLowerCase() == 'si' ? 'S' : 'N';
+        requestBody.question2 = formData.question2.toLowerCase() == 'si' ? 'S' : 'N';
+        requestBody.question3 = formData.question3.toLowerCase() == 'si' ? 'S' : 'N';
+        requestBody.question4 = formData.question4.toLowerCase() == 'si' ? 'S' : 'N';
 
-        fetchApi('patients', 'POST', requestBody)
+    // include the token obtained from the signup step so the backend
+    // can associate the record to the just-created patient
+    if (tokenFromSignup) requestBody.token = tokenFromSignup;
+
+        fetchApi('record', 'POST', requestBody)
             .then(async res => {
                 await Dialog.alert({
                     title: '¡Bienvenido!',
                     message: 'Registro exitoso.'
                 });
-                setToken(res.token);
+                // If the backend returned a token here, prefer it; otherwise use the token passed from signup
+                const tokenToSet = res?.token || tokenFromSignup;
+                if (tokenToSet) {
+                    setToken(tokenToSet);
+                }
             })
             .catch(error => {
                 console.log(error.message);
@@ -81,87 +83,47 @@ export const PatientSignUpPage = () => {
                 <h1 className={styles.title}>Historial Medico</h1>
             </div>
 
-            <Input
+            <SegmentedControl
                 color='var(--secondary)'
-                label='Nombre(s)'
-                name='name'
-                type='text'
-                value={formData.name}
+                label='¿Padeces alguna enfermedad grave o cronica (diabetes, hipertesion , asma, etc)?'
+                name='question1'
+                value={formData.question1}
                 setterFunction={setFormData}
-            />
-            <Input
-                color='var(--secondary)'
-                label='Apellido(s)'
-                name='lastname'
-                type='text'
-                value={formData.lastname}
-                setterFunction={setFormData}
-            />
-            <Input
-                color='var(--secondary)'
-                label='CURP'
-                name='curp'
-                type='text'
-                value={formData.curp}
-                setterFunction={setFormData}
+                options={boxoptions}
             />
             <SegmentedControl
                 color='var(--secondary)'
-                label='Sexo'
-                name='sex'
-                value={formData.sex}
+                label='¿ Te han realizado alguna cirugía con anterioridad?'
+                name='question2'
+                value={formData.question2}
                 setterFunction={setFormData}
-                options={sexOptions}
+                options={boxoptions}
+            />
+            <SegmentedControl
+                color='var(--secondary)'
+                label='¿Tomas algun medicamento actualmente?'
+                name='question3'
+                value={formData.question3}
+                setterFunction={setFormData}
+                options={boxoptions}
+            />
+            <SegmentedControl
+                color='var(--secondary)'
+                label='¿Alergias algún medicamento?'
+                name='question4'
+                value={formData.question4}
+                setterFunction={setFormData}
+                options={boxoptions}
             />
             <Input
                 color='var(--secondary)'
-                label='Edad'
-                name='age'
-                type='number'
-                value={formData.age}
-                setterFunction={setFormData}
-            />
-            <Input
-                color='var(--secondary)'
-                label='Estatura (metros)'
-                name='height'
-                type='number'
-                value={formData.height}
-                setterFunction={setFormData}
-            />
-            <Input
-                color='var(--secondary)'
-                label='Peso (kg)'
-                name='weight'
-                type='number'
-                value={formData.weight}
-                setterFunction={setFormData}
-            />
-            <Input
-                color='var(--secondary)'
-                label='Teléfono'
-                name='telephone'
+                label='¿Cuál?'
+                name='questionwrite'
                 type='text'
-                value={formData.telephone}
+                value={formData.questionwrite}
                 setterFunction={setFormData}
             />
-            <Input
-                color='var(--secondary)'
-                label='Correo electrónico'
-                name='email'
-                type='email'
-                value={formData.email}
-                setterFunction={setFormData}
-            />
-            <Input
-                color='var(--secondary)'
-                label='Contraseña'
-                name='password'
-                type='password'
-                value={formData.password}
-                setterFunction={setFormData}
-            />
-
+        
             <Button onClick={onConfirm}>
                 Confirmar
             </Button>

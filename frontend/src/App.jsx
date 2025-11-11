@@ -3,6 +3,7 @@ import { IndexPage } from "./routes/IndexPage";
 import { LoginPage } from "./routes/LoginPage";
 import { ClinicianSignUpPage } from "./routes/ClinicianSignUpPage";
 import { PatientSignUpPage } from "./routes/PatientSignUpPage";
+import { RecordPage } from "./routes/RecordPage";
 import { Layout } from "./routes/Layout";
 import { AssistancePage } from "./routes/AssistancePage";
 import { CounterpartPage } from './routes/CounterpartPage';
@@ -30,6 +31,7 @@ export const App = () => {
 										<Route path="login" element={<LoginPage />} />
 										<Route path="signup-clinician" element={<ClinicianSignUpPage />} />
 										<Route path="signup-patient" element={<PatientSignUpPage />} />
+										<Route path="signup-record" element={<RecordPage />} />
 										<Route path="app-settings" element={<SettingsPage />} />
 										<Route path="navigation" element={<Layout />}>
 											<Route index element={<AssistancePage />} />
