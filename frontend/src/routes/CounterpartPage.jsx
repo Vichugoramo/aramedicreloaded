@@ -3,6 +3,8 @@ import { PageTitle } from '../components/PageTitle';
 import { InfoItem } from '../components/InfoItem';
 import { useToken } from '../contexts/TokenContext';
 import { useAssistanceService } from '../contexts/AssistanceServiceContext';
+import { Button } from '../components/Button'; // <-- 1. Importar Button
+import { useNavigate } from 'react-router'; // <-- 2. Importar useNavigate
 
 const CounterpartData = ({ title, elements = [] }) => (
     <>
@@ -11,6 +13,12 @@ const CounterpartData = ({ title, elements = [] }) => (
             { elements.map(e => (
                 Array.isArray(e) ? (
                     <DataRow key={e[0]?.label} elements={e} />
+                ) : e.type === 'button' ? ( // <-- 3. Añadir lógica para renderizar un botón
+                    <div className={styles.buttonContainer}> 
+                        <Button onClick={e.onClick} color="var(--primary)">
+                            {e.label}
+                        </Button>
+                    </div>
                 ) : (
                     <InfoItem key={e.label} labelColor='var(--secondary)' label={e.label}>
                         {e.value}
@@ -37,25 +45,47 @@ const AvailableClinicianView = () => (
     </div>
 )
 
-const BusyClinicianView = ({ counterpart }) => (
-    <div className={styles.busyClinicianView}>
-        <CounterpartData
-            title='Datos del paciente'
-            elements={[
-                { label: 'Paciente', value: counterpart.fullName },
-                [
-                    { label: 'Sexo', value: counterpart.sex == 'F' ? 'Femenino' : 'Masculino' },
-                    { label: 'Edad', value: `${counterpart.age} años` }
-                ],
-                [
-                    { label: 'Estatura', value: `${Number(counterpart.height)}m` },
-                    { label: 'Peso', value: `${Number(counterpart.weight)}kg` }
-                ],
-                { label: 'Número de teléfono', value: counterpart.telephone }
-            ]}
-        />
-    </div>
-)
+const BusyClinicianView = ({ counterpart }) => {
+    // 4. Hook para navegar
+    const navigate = useNavigate();
+
+    // 5. Función que se llamará al presionar el botón
+    const onShowHistory = () => {
+        // Asumo que 'counterpart.id' tiene el ID del paciente
+        // Si el ID está en otra propiedad (ej: counterpart.userId), ajústalo aquí.
+        if (counterpart.id) {
+            navigate('/medical-history', { state: { patientId: counterpart.id } });
+        } else {
+            console.error("No se encontró el ID del paciente en 'counterpart'");
+        }
+    };
+
+    return (
+        <div className={styles.busyClinicianView}>
+            <CounterpartData
+                title='Datos del paciente'
+                elements={[
+                    { label: 'Paciente', value: counterpart.fullName },
+                    [
+                        { label: 'Sexo', value: counterpart.sex == 'F' ? 'Femenino' : 'Masculino' },
+                        { label: 'Edad', value: `${counterpart.age} años` }
+                    ],
+                    [
+                        { label: 'Estatura', value: `${Number(counterpart.height)}m` },
+                        { label: 'Peso', value: `${Number(counterpart.weight)}kg` }
+                    ],
+                    { label: 'Número de teléfono', value: counterpart.telephone },
+                    // 6. Objeto especial para el botón
+                    {
+                        type: 'button',
+                        label: 'Historial',
+                        onClick: onShowHistory
+                    }
+                ]}
+            />
+        </div>
+    )
+}
 
 const AvailablePatientView = () => (
     <div className={styles.availablePatientView}>

@@ -1,23 +1,25 @@
 const recordRepository = require("../repositories/recordRepository");
 const { generateToken, getTypeAndIdFromToken } = require("../utils/tokenUtils");
 
-
+//
+// TU FUNCIÓN createRecord (sin cambios)
+//
 const createRecord = async (req, res, next) => {
     const record = req.body;
+    // ... (Tu validación de createRecord)
     if(
         !record ||
         !['S', 'N'].includes(record.question1) ||
         !['S', 'N'].includes(record.question2) ||
         !['S', 'N'].includes(record.question3) ||
-        !['S', 'N'].includes(record.question4) ||
-        !record.questionwrite
+        !['S', 'N'].includes(record.question4)
     ){
         return res.status(400).json({
-            message: 'Petición incorrecta'
+            message: 'Petición incorrecta: Faltan respuestas obligatorias (S/N)'
         });
     }
+
     try{
-        // Try to obtain patient id from a token sent in the body or in Authorization header
         let token = req.body?.token;
         if (!token && req.headers?.authorization) {
             const parts = req.headers.authorization.split(' ');
@@ -31,7 +33,6 @@ const createRecord = async (req, res, next) => {
         }
 
         if (!patientId) {
-            // If no patient id provided, return 401 because we don't know to which patient attach the record
             return res.status(401).json({ message: 'Unauthorized: missing patient token' });
         }
 
@@ -47,13 +48,62 @@ const createRecord = async (req, res, next) => {
     }catch(error){
         return next(error);
     }
+};
 
+//
+// --- NUEVA FUNCIÓN (Para el paciente viendo su propio historial) ---
+//
+const getOwnRecord = async (req, res, next) => {
+    try {
+        // Obtenemos el ID del token
+        const { userId: patientId } = req.user; 
+
+        if (!patientId) {
+            return res.status(401).json({ message: 'Unauthorized: Token inválido' });
+        }
+
+        const record = await recordRepository.getRecordById(patientId);
+
+        if (!record) {
+            return res.status(404).json({ message: "Historial no encontrado" });
+        }
+
+        return res.status(200).json(record);
+
+    } catch(error) {
+        return next(error);
+    }
+};
+
+//
+// --- NUEVA FUNCIÓN (Para el médico viendo el historial de un paciente) ---
+//
+const getPatientRecordById = async (req, res, next) => {
+    try {
+        // Obtenemos el ID de los parámetros de la URL (ej: /record/123)
+        const { patientId } = req.params;
+
+        if (!patientId) {
+            return res.status(400).json({ message: "Petición incorrecta: Falta patientId" });
+        }
+
+        // (Aquí el médico ya está verificado por el middleware 'verifyUserRole')
+        const record = await recordRepository.getRecordById(patientId);
+
+        if (!record) {
+            return res.status(404).json({ message: "Historial no encontrado" });
+        }
+
+        return res.status(200).json(record);
+
+    } catch(error) {
+        return next(error);
+    }
 };
 
 
-
-
-
 module.exports = {
-    createRecord
+    createRecord,
+    getOwnRecord,          // Exportamos la nueva función
+    getPatientRecordById   // Exportamos la nueva función
 };

@@ -8,6 +8,7 @@ import { Layout } from "./routes/Layout";
 import { AssistancePage } from "./routes/AssistancePage";
 import { CounterpartPage } from './routes/CounterpartPage';
 import { ChatPage } from './routes/ChatPage';
+import { MedicalHistoryPage } from './routes/MedicalHistorialPage';
 import { ProfilePage } from './routes/ProfilePage';
 import { SettingsPage } from "./routes/SettingsPage";
 import { APIProvider } from './contexts/APIContext';
@@ -37,6 +38,7 @@ export const App = () => {
 											<Route index element={<AssistancePage />} />
 											<Route path="assistance" element={<AssistancePage />} />
 											<Route path="counterpart" element={<CounterpartPage />} />
+											<Route path="MedicalHistorial" element={<MedicalHistoryPage />} />
 											<Route path="chat" element={<ChatPage />} />
 											<Route path="profile" element={<ProfilePage />} />
 										</Route>

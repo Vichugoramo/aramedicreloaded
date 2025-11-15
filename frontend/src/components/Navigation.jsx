@@ -47,10 +47,15 @@ const patientItems = [
 		IconComponent: ChatIcon
 	},
 	{
+		label: 'Historial',
+		path: 'MedicalHistorial',
+		IconComponent: ProfileIcon
+	},
+	{
 		label: 'Perfil',
 		path: 'profile',
 		IconComponent: ProfileIcon
-	}
+	},
 ];
 
 export const Navigation = () => {
