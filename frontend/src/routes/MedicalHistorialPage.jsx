@@ -1,7 +1,6 @@
 import styles from './ProfilePage.module.css'; // Reusamos los estilos de ProfilePage
 import { PageTitle } from '../components/PageTitle';
 import { InfoItem } from '../components/InfoItem';
-import { BackButton } from '../components/BackButton';
 import { useAPI } from '../contexts/APIContext';
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router';
@@ -77,10 +76,7 @@ export const MedicalHistoryPage = () => {
     return (
         <main className={styles.profilePage}>
             <div className={styles.titleContainer}>
-                <div className={styles.backButtonContainer}>
-                    <BackButton />
-                </div>
-                <h1 className={styles.title}>Historial Médico</h1>
+                 <PageTitle>Historial Médico</PageTitle>
             </div>
 
             <div className={styles.infoContainer}>

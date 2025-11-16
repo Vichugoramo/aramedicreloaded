@@ -8,7 +8,6 @@ const db = require('../config/db').getDB();
  */
 const createRecord = async (patientId, record) => { 
 
-    // Actualizamos la query para incluir las 4 columnas de detalles
     const insertRecordQuery = `
         INSERT INTO historial
         (id_paciente, question1, details1, question2, details2, question3, details3, question4, details4) 
@@ -19,7 +18,7 @@ const createRecord = async (patientId, record) => {
         // Mapeamos los valores en el orden correcto
         const values = [
             patientId, 
-            record.question1, record.details1 || null, // Si viene vacío, guardamos null o string vacío
+            record.question1, record.details1 || null, 
             record.question2, record.details2 || null,
             record.question3, record.details3 || null,
             record.question4, record.details4 || null
@@ -27,7 +26,8 @@ const createRecord = async (patientId, record) => {
 
         const [result] = await db.query(insertRecordQuery, values);
         
-        return { id: result.insertId, patientId };
+        // CORRECCIÓN: El ID del registro es el patientId, no un auto-incremento
+        return { id: patientId, patientId };
 
     } catch(err){
         console.error('createRecord error', err.message || err);
@@ -37,13 +37,14 @@ const createRecord = async (patientId, record) => {
 
 /**
  * Get record by Patient ID
- * @param {Number} id 
+ * @param {Number} id (Este 'id' es el patientId)
+ * @returns {Promise<HistorialData>}
  */
 const getRecordById = async (id) => {
-    // Actualizamos el SELECT para traer los detalles
+    // CORRECCIÓN: Cambiamos 'h.id' por 'h.id_paciente'
     const query = `
         SELECT 
-            h.id, 
+            h.id_paciente, 
             h.question1, h.details1,
             h.question2, h.details2,
             h.question3, h.details3,
@@ -57,8 +58,9 @@ const getRecordById = async (id) => {
     
     if (!record) return null;
 
+    // CORRECCIÓN: Mapeamos la columna correcta
     return {
-        id: record.id,
+        id_paciente: record.id_paciente,
         question1: record.question1,
         details1: record.details1,
         question2: record.question2,
@@ -69,6 +71,23 @@ const getRecordById = async (id) => {
         details4: record.details4
     };
 };
+
+
+
+
+/**
+ * @typedef {Object} HistorialData
+ * @property {Number} id_paciente
+ * @property {'S' | 'N'} question1,
+ * @property {string} details1,
+ * @property {'S' | 'N'} question2,
+ * @property {string} details2,
+ * @property {'S' | 'N'} question3,
+ * @property {string} details3,
+ * @property {'S' | 'N'} question4,
+ * @property {string} details4
+ * */
+
 
 module.exports = {
     createRecord,
