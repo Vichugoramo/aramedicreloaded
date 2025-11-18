@@ -16,6 +16,13 @@ import { useAssistanceService } from '../contexts/AssistanceServiceContext';
 import { Dialog } from '@capacitor/dialog';
 import { useLocation } from 'react-router';
 
+// --- Componente Loading Reutilizable (Opcional pero recomendado) ---
+const LoadingView = ({ message }) => (
+    <div className={styles.waitingPatientView}>
+        <p>{message || 'Cargando datos...'}</p>
+    </div>
+);
+
 const AvailableClinicianView = ({ profile }) => (
     <>
         <RoundedSpecialityHeader speciality={profile?.speciality} name={profile?.name} />
@@ -32,6 +39,17 @@ const AvailableClinicianView = ({ profile }) => (
 const BusyClinicianView = ({ profile }) => {
     const { assistanceService, request } = useAssistanceService();
     const emergencyTypes = useEmergencyTypes();
+
+    // --- PROTECCIÓN CONTRA CRASH (Race Condition) ---
+    // 1. Validamos que request exista
+    if (!request) return <LoadingView message="Sincronizando solicitud..." />;
+
+    // 2. Buscamos el tipo de emergencia de forma segura
+    const emergencyTypeObj = emergencyTypes.find(type => type.id == request.emergencyTypeId);
+
+    // 3. Si la lista de tipos aún no carga, esperamos.
+    if (!emergencyTypeObj) return <LoadingView message="Cargando detalles de emergencia..." />;
+
 
     const endAssistance = async () => {
         const { value } = await Dialog.confirm({
@@ -54,7 +72,7 @@ const BusyClinicianView = ({ profile }) => {
             <div className={styles.busyClinicianContent}>
                 <Map />
                 <EmergencyDetails
-                    emergencyType={emergencyTypes.find(type => type.id == request.emergencyTypeId).name}
+                    emergencyType={emergencyTypeObj.name} // Usamos el objeto seguro que encontramos arriba
                     reportTimestampInMs={request.creationTimestamp}
                     notes={request.notes}
                 />
@@ -76,14 +94,20 @@ const AvailablePatientView = ({ emergencyTypes }) => {
 
     const handleConfirm = () => {
         const { selectedType, notes } = formData;
+        // Validación extra por si emergencyTypes aún no carga
+        if (!emergencyTypes || emergencyTypes.length === 0) return;
+
         const selectedTypeObj = emergencyTypes.find(type => type.name == selectedType);
-        const selectedId = selectedTypeObj.id;
-        assistanceService.createRequest({
-            emergencyTypeId: selectedId,
-            notes: notes,
-            initialLatitude: latitude,
-            initialLongitude: longitude
-        });
+        
+        if (selectedTypeObj) {
+             const selectedId = selectedTypeObj.id;
+             assistanceService.createRequest({
+                emergencyTypeId: selectedId,
+                notes: notes,
+                initialLatitude: latitude,
+                initialLongitude: longitude
+            });
+        }
     }
 
     return (
@@ -135,6 +159,14 @@ const BusyPatientView = () => {
     const { request, counterpart } = useAssistanceService();
     const emergencyTypes = useEmergencyTypes();
 
+    // --- PROTECCIÓN CONTRA CRASH (Race Condition) ---
+    if (!request || !counterpart) return <LoadingView message="Conectando con el médico..." />;
+
+    const emergencyTypeObj = emergencyTypes.find(type => type.id == request.emergencyTypeId);
+    
+    // Si los tipos de emergencia no han cargado, mostramos carga en lugar de explotar
+    if (!emergencyTypeObj) return <LoadingView message="Cargando información..." />;
+
     return (
         <div className={styles.busyPatientView}>
             <SpecialityHeader speciality={counterpart?.speciality} name={counterpart?.fullName} />
@@ -143,7 +175,7 @@ const BusyPatientView = () => {
             <div className={styles.busyPatientContent}>
                 <Map />
                 <EmergencyDetails
-                    emergencyType={emergencyTypes.find(type => type.id == request.emergencyTypeId).name}
+                    emergencyType={emergencyTypeObj.name} // Usamos el objeto seguro
                     reportTimestampInMs={request.creationTimestamp}
                     notes={request.notes}
                 />
