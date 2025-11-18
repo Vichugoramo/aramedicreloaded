@@ -1,6 +1,7 @@
 import styles from './Navigation.module.css';
 import AssistanceIcon from '../assets/ion--medical.svg?react';
 import PatientIcon from '../assets/material-symbols--medical-mask.svg?react';
+import MedicalHistoryIcon from '../assets/material-symbols--docs-rounded.svg?react';
 import ChatIcon from '../assets/mynaui--message-solid.svg?react';
 import ProfileIcon from '../assets/iconamoon--profile-fill.svg?react';
 import ClinicianIcon from '../assets/maki--doctor.svg?react';
@@ -49,7 +50,7 @@ const patientItems = [
 	{
 		label: 'Historial',
 		path: 'MedicalHistorial',
-		IconComponent: ProfileIcon
+		IconComponent: MedicalHistoryIcon
 	},
 	{
 		label: 'Perfil',

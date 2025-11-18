@@ -5,6 +5,7 @@ import { useToken } from '../contexts/TokenContext';
 import { useAssistanceService } from '../contexts/AssistanceServiceContext';
 import { Button } from '../components/Button'; // <-- 1. Importar Button
 import { useNavigate } from 'react-router'; // <-- 2. Importar useNavigate
+import localStyles from './MedicalHistoryPage.module.css';
 
 const CounterpartData = ({ title, elements = [] }) => (
     <>
@@ -14,7 +15,7 @@ const CounterpartData = ({ title, elements = [] }) => (
                 Array.isArray(e) ? (
                     <DataRow key={e[0]?.label} elements={e} />
                 ) : e.type === 'button' ? ( // <-- 3. Añadir lógica para renderizar un botón
-                    <div className={styles.buttonContainer}> 
+                    <div className={localStyles.formButtons}> 
                         <Button onClick={e.onClick} color="var(--primary)">
                             {e.label}
                         </Button>

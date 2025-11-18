@@ -16,6 +16,7 @@ async function startServer() {
     const medicRoutes = require('./src/routes/medicRoutes');// because routes need the database connection already established
     const patientRoutes = require('./src/routes/patientRoute');
     const recordRoutes = require('./src/routes/recordRoute');
+    const logRoutes = require('./src/routes/logRoutes');
     const specialityRoutes = require('./src/routes/specialityRoute');
     const userRoutes = require('./src/routes/userRoutes');
     const emergencyRoutes = require('./src/routes/emergencyRoutes');
@@ -41,6 +42,7 @@ async function startServer() {
     app.use(medicRoutes);
     app.use(patientRoutes);
     app.use(recordRoutes);
+    app.use(logRoutes);
     app.use(specialityRoutes);
     io.on('connection', socketController(io));
     

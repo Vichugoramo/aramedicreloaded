@@ -1,0 +1,87 @@
+/* Estilos para la nueva Bitácora Médica 
+    (Estos se añaden a los estilos de ProfilePage.module.css que ya reusamos)
+*/
+
+.logSection {
+    margin-top: 32px; /* Espacio entre el historial fijo y la bitácora */
+    width: 100%;
+}
+
+.logForm {
+    width: 100%;
+    padding: 16px;
+    background-color: #f8f9fa; /* Un fondo ligero para el formulario */
+    border-radius: 8px;
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.formLabel {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: var(--primary, #333);
+}
+
+.logInput {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1em;
+    font-family: inherit;
+    box-sizing: border-box; /* Asegura que el padding no rompa el layout */
+}
+
+/* Contenedor para los botones del formulario (Agregar, Cancelar) */
+.formButtons {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+/* Estilos para cada entrada de la lista */
+.logEntry {
+    width: 100%;
+    border-bottom: 1px solid #eee; /* Separador */
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+}
+
+/* Contenedor para los botones de Editar/Eliminar */
+.logActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: -8px; /* Acerca los botones a la descripción */
+    margin-right: 8px;
+}
+
+.actionButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.actionButton:hover {
+    background-color: #f0f0f0;
+}
+
+.deleteButton {
+    color: var(--danger, #dc3545);
+}
+
+.deleteButton:hover {
+    background-color: #fbebee;
+}
+
+/* Contenedor de la lista de logs */
+.logList {
+    margin-top: 16px;
+}
