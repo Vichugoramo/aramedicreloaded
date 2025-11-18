@@ -54,7 +54,7 @@ const BusyClinicianView = ({ counterpart }) => {
         // Asumo que 'counterpart.id' tiene el ID del paciente
         // Si el ID está en otra propiedad (ej: counterpart.userId), ajústalo aquí.
         if (counterpart.id) {
-            navigate('/medical-history', { state: { patientId: counterpart.id } });
+            navigate('/navigation/MedicalHistorial', { state: { patientId: counterpart.id } });
         } else {
             console.error("No se encontró el ID del paciente en 'counterpart'");
         }

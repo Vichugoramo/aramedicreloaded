@@ -5,6 +5,7 @@ import { useAPI } from '../contexts/APIContext';
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router';
 import { Dialog } from '@capacitor/dialog';
+import { BackButton } from '../components/BackButton';
 
 // Definimos las preguntas
 const medicalQuestions = [
@@ -64,6 +65,15 @@ export const MedicalHistoryPage = () => {
                 setLoading(false);
             })
             .catch(err => {
+                // Si el error es 404, significa que no hay historial registrado para ese paciente.
+                // En ese caso mostramos la vista de "Sin datos" en lugar de lanzar un diálogo.
+                if (err?.message?.includes('404')) {
+                    console.warn('Historial no encontrado para patientId=', patientId);
+                    setHistory(null);
+                    setLoading(false);
+                    return;
+                }
+
                 console.error(err);
                 Dialog.alert({
                     title: 'Error',
@@ -76,6 +86,11 @@ export const MedicalHistoryPage = () => {
     return (
         <main className={styles.profilePage}>
             <div className={styles.titleContainer}>
+                {patientId && (
+                    <div className={styles.backButtonContainer}>
+                        <BackButton />
+                    </div>
+                )}
                  <PageTitle>Historial Médico</PageTitle>
             </div>
 

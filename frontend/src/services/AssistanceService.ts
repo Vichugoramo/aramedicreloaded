@@ -6,6 +6,7 @@ interface Message {
 }
 
 export interface Counterpart {
+    id?: number,
     fullName: string,
     telephone: string,
     latitude: number | null,
@@ -36,6 +37,7 @@ interface ReceiveMessageEventBody {
 }
 
 interface ReceivePatientDataEventBody {
+    id?: number,
     fullname: string,
     height: number,
     weight: number,
@@ -48,6 +50,7 @@ interface ReceivePatientDataEventBody {
 }
 
 interface ReceiveClinicianDataEventBody {
+    id?: number,
     fullname: string,
     licence: string,
     speciality: string,
@@ -379,6 +382,7 @@ export class ClinicianAssistanceService extends AssistanceService {
     }
 
     private handleReceiveCounterpartData(data: ReceivePatientDataEventBody) {
+        console.log('AssistanceService: receiveCounterpartData (patient):', data);
         const request: AssistanceRequest = {
             creationTimestamp: data.requestTimestamp,
             emergencyTypeId: data.emergencyTypeId,
@@ -386,6 +390,7 @@ export class ClinicianAssistanceService extends AssistanceService {
         };
         
         const patient: Patient = {
+            id: data.id,
             fullName: data.fullname,
             age: data.age,
             telephone: data.telephone,
@@ -397,7 +402,7 @@ export class ClinicianAssistanceService extends AssistanceService {
             isOnline: false
         };
         
-        this.setRequest(request);
+        console.log('AssistanceService: parsed patient object:', patient);
         this.setPatient(patient);
     }
 
@@ -514,7 +519,9 @@ export class PatientAssistanceService extends AssistanceService {
     }
 
     private handleReceiveCounterpartData(data: ReceiveClinicianDataEventBody) {
+        console.log('AssistanceService: receiveCounterpartData (clinician):', data);
         const clinician: Clinician = {
+            id: data.id,
             fullName: data.fullname,
             licence: data.licence,
             telephone: data.telephone,
@@ -523,6 +530,7 @@ export class PatientAssistanceService extends AssistanceService {
             longitude: null,
             isOnline: false
         };
+        console.log('AssistanceService: parsed clinician object:', clinician);
         
         this.setClinician(clinician);
     }

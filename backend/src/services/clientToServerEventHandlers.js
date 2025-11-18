@@ -218,6 +218,7 @@ const generateMessageFromCounterpartData = (recipientData) => {
     if (recipientData.type == 'MEDICO') {
 
         return {
+            id: recipientData.data.id,
             fullname: recipientData.data.lastname + ' ' + recipientData.data.name,
             licence: recipientData.data.licence,
             speciality: recipientData.data.speciality,
@@ -225,6 +226,7 @@ const generateMessageFromCounterpartData = (recipientData) => {
         }
     } else if (recipientData.type == 'PACIENTE') {
         return {
+            id: recipientData.data.id,
             fullname: recipientData.data.lastname + ' ' + recipientData.data.name,
             height: recipientData.data.height,
             weight: recipientData.data.weight,
