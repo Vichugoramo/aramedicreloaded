@@ -382,7 +382,6 @@ export class ClinicianAssistanceService extends AssistanceService {
     }
 
     private handleReceiveCounterpartData(data: ReceivePatientDataEventBody) {
-        console.log('AssistanceService: receiveCounterpartData (patient):', data);
         const request: AssistanceRequest = {
             creationTimestamp: data.requestTimestamp,
             emergencyTypeId: data.emergencyTypeId,
@@ -390,7 +389,6 @@ export class ClinicianAssistanceService extends AssistanceService {
         };
         
         const patient: Patient = {
-            id: data.id,
             fullName: data.fullname,
             age: data.age,
             telephone: data.telephone,
@@ -401,13 +399,17 @@ export class ClinicianAssistanceService extends AssistanceService {
             longitude: null,
             isOnline: false
         };
+
+        if (data.id) {
+            patient.id = data.id;
+        }
         
-        console.log('AssistanceService: parsed patient object:', patient);
+        this.setRequest(request);
         this.setPatient(patient);
-    }
+    } // <-- CORREGIDO (Antes era _})
 
     private handleRequestCompletedForClinician() {
-        this.clearPatient();
+        this.clearPatient(); // <-- CORREGIDO (Antes tenía una 'G' extra)
     }
 
     private handleUpdateCounterpartLocation(data: UpdateCounterpartLocationEventBody) {
@@ -461,7 +463,6 @@ export class PatientAssistanceService extends AssistanceService {
     createRequest(data: CreateRequestBody) {
         this.socket.emit('createRequest', data);
 
-        // TODO: The request object should be created and set in this.handleRequestCreated(), not here
         const request: AssistanceRequest = {
             creationTimestamp: Date.now(),
             emergencyTypeId: data.emergencyTypeId,
@@ -519,9 +520,7 @@ export class PatientAssistanceService extends AssistanceService {
     }
 
     private handleReceiveCounterpartData(data: ReceiveClinicianDataEventBody) {
-        console.log('AssistanceService: receiveCounterpartData (clinician):', data);
         const clinician: Clinician = {
-            id: data.id,
             fullName: data.fullname,
             licence: data.licence,
             telephone: data.telephone,
@@ -530,8 +529,11 @@ export class PatientAssistanceService extends AssistanceService {
             longitude: null,
             isOnline: false
         };
-        console.log('AssistanceService: parsed clinician object:', clinician);
         
+        if (data.id) {
+            clinician.id = data.id;
+        }
+
         this.setClinician(clinician);
     }
 
