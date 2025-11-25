@@ -6,13 +6,11 @@ const verifyUserRole = require("../middlewares/verifyUserRole");
 const multer = require('multer');
 const path = require('path');
 
-// Configuración de almacenamiento de Multer
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'uploads/') // Asegúrate de que esta carpeta exista en tu backend
+        cb(null, 'uploads/')
     },
     filename: function (req, file, cb) {
-        // Guardamos el archivo con un nombre único: fecha + nombre original
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
         cb(null, uniqueSuffix + path.extname(file.originalname));
     }
@@ -20,7 +18,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ 
     storage: storage,
-    limits: { fileSize: 5 * 1024 * 1024 }, // Límite de 5MB
+    limits: { fileSize: 5 * 1024 * 1024 },
     fileFilter: (req, file, cb) => {
         if (file.mimetype === 'application/pdf') {
             cb(null, true);
@@ -30,18 +28,16 @@ const upload = multer({
     }
 });
 
-// --- Rutas ---
-
-// Subir archivo (Solo Médicos)
+// Subir archivo
 router.post(
     '/files/upload',
     auth,
     verifyUserRole(['MEDICO']),
-    upload.single('file'), // 'file' es el nombre del campo en el FormData
+    upload.single('file'),
     fileController.uploadFile
 );
 
-// Obtener archivos de un paciente (Para Paciente y Médico)
+// Obtener archivos de un paciente
 router.get(
     '/files/:patientId',
     auth,

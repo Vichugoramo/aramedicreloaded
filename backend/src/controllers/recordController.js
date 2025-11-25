@@ -1,12 +1,8 @@
 const recordRepository = require("../repositories/recordRepository");
 const { generateToken, getTypeAndIdFromToken } = require("../utils/tokenUtils");
 
-//
-// TU FUNCIÓN createRecord (sin cambios)
-//
 const createRecord = async (req, res, next) => {
     const record = req.body;
-    // ... (Tu validación de createRecord)
     if(
         !record ||
         !['S', 'N'].includes(record.question1) ||
@@ -50,12 +46,8 @@ const createRecord = async (req, res, next) => {
     }
 };
 
-//
-// --- NUEVA FUNCIÓN (Para el paciente viendo su propio historial) ---
-//
 const getOwnRecord = async (req, res, next) => {
     try {
-        // Obtenemos el ID del token
         const { userId: patientId } = req.user; 
 
         if (!patientId) {
@@ -75,19 +67,14 @@ const getOwnRecord = async (req, res, next) => {
     }
 };
 
-//
-// --- NUEVA FUNCIÓN (Para el médico viendo el historial de un paciente) ---
-//
 const getPatientRecordById = async (req, res, next) => {
     try {
-        // Obtenemos el ID de los parámetros de la URL (ej: /record/123)
         const { patientId } = req.params;
 
         if (!patientId) {
             return res.status(400).json({ message: "Petición incorrecta: Falta patientId" });
         }
 
-        // (Aquí el médico ya está verificado por el middleware 'verifyUserRole')
         const record = await recordRepository.getRecordById(patientId);
 
         if (!record) {
@@ -104,6 +91,6 @@ const getPatientRecordById = async (req, res, next) => {
 
 module.exports = {
     createRecord,
-    getOwnRecord,          // Exportamos la nueva función
-    getPatientRecordById   // Exportamos la nueva función
+    getOwnRecord,          
+    getPatientRecordById 
 };

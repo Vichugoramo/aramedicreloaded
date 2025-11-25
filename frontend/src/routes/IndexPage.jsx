@@ -1,3 +1,4 @@
+// Pantalla inicial de bienvenida con opciones de registro e inicio de sesión
 import { BigRoundedButton } from '../components/BigRoundedButton';
 import PatientIcon from '../assets/material-symbols--medical-mask.svg?react';
 import ClinicianIcon from '../assets/maki--doctor.svg?react';
@@ -21,10 +22,10 @@ export const IndexPage = () => {
 
             <div className={styles.logoSection}>
                 <div className={styles.logoContainer}>
-                    <Logo/>
+                    <Logo />
                 </div>
             </div>
-            
+
             <div className={styles.contentSection}>
                 <p className={styles.text}>¡Bienvenido! Crea una cuenta para comenzar</p>
 
@@ -36,7 +37,7 @@ export const IndexPage = () => {
                 </BigRoundedButton>
 
                 <BigRoundedButton
-                    icon={<ClinicianIcon/>}
+                    icon={<ClinicianIcon />}
                     onClick={() => navigate('signup-clinician')}
                 >
                     SOY MÉDICO

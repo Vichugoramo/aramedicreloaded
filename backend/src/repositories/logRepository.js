@@ -1,6 +1,5 @@
 const db = require('../config/db').getDB();
 
-// Obtiene todos los registros de un paciente, ordenados por fecha
 const getLogsByPatientId = async (patientId) => {
     const query = `
         SELECT id, id_paciente, DATE_FORMAT(log_date, '%Y-%m-%d') as log_date, description 
@@ -20,7 +19,6 @@ const createLog = async (patientId, log_date, description) => {
     `;
     const [result] = await db.query(query, [patientId, log_date, description]);
     
-    // Devuelve el registro recién creado
     return {
         id: result.insertId,
         id_paciente: patientId,
@@ -29,7 +27,6 @@ const createLog = async (patientId, log_date, description) => {
     };
 };
 
-// Obtiene el dueño de un registro (para seguridad)
 const getLogOwner = async (logId) => {
     const query = "SELECT id_paciente FROM medical_logs WHERE id = ?";
     const [rows] = await db.query(query, [logId]);

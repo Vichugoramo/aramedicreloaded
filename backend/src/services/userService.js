@@ -1,3 +1,4 @@
+// Servicio que gestiona usuarios conectados y asignación de médicos a pacientes
 const { Socket, Server } = require("socket.io");
 const patientRepository = require("../repositories/patientRepository");
 const requestService = require("./requestService");
@@ -34,7 +35,7 @@ setInterval(async () => {
         for (const candidate of medicCandidates) {
             const requestAssigned = await requestService.getAssignedRequestByMedicId(candidate.userId);
             if (!requestAssigned) { // if the medic is not assigned to a request yet
-                
+
                 const medic = await medicService.getMedicDataById(candidate.userId);
                 medic.emergenciesSpecialities.map(e => e.emergencyTypeId).includes(pendingRequest.emergencyId) ? candidates.push(medic) : null;
             }
@@ -44,15 +45,15 @@ setInterval(async () => {
             continue;
         }
         const patientConnected = users.patients.find(p => p.userId === pendingRequest.patientId);
-        let pendingRequestCoordinates = { latitude:pendingRequest?.initialLocation?.split(',')[0], longitude: pendingRequest?.initialLocation?.split(',')[1] };
+        let pendingRequestCoordinates = { latitude: pendingRequest?.initialLocation?.split(',')[0], longitude: pendingRequest?.initialLocation?.split(',')[1] };
 
-        let chosenMedic = await findClosestMedic(candidates, patientConnected?.location? {latitude: patientConnected.location.currentLatitude, longitude: patientConnected.location.currentLongitude} : {latitude: pendingRequestCoordinates.latitude , longitude: pendingRequestCoordinates.longitude});
+        let chosenMedic = await findClosestMedic(candidates, patientConnected?.location ? { latitude: patientConnected.location.currentLatitude, longitude: patientConnected.location.currentLongitude } : { latitude: pendingRequestCoordinates.latitude, longitude: pendingRequestCoordinates.longitude });
         if (!chosenMedic) {
             continue;
         }
 
         await requestService.assignMedicToRequest(chosenMedic.userId, pendingRequest.id);
-        
+
         const patiendData = await patientRepository.getPatientById(pendingRequest.patientId);
         const messageToMedic = generateMessageFromCounterpartData({ type: 'PACIENTE', data: patiendData });
         messageToMedic.notes = pendingRequest.notes;
@@ -68,7 +69,7 @@ setInterval(async () => {
             patientConnected.socket.emit('receiveCounterpartData', messageToPatient);
         }
 
-        
+
     };
     isProcessing = false;
 }, TIME_TO_VERIFY_IF_REQUESTS_CAN_BE_ASSIGNED);
@@ -77,8 +78,8 @@ setInterval(async () => {
 
 
 /**
- * @param {User} user Los datos del usuario que se intenta conectar. type y userId
- * @param {Socket} socket El objeto del socket que se intenta conectar
+ * @param {User} user 
+ * @param {Socket} socket
  * @returns {Promise<void>}
  * 
  * @description Registra la conexion de un usuario en la lista de usuarios conectados, si tiene una solicitud 'Pendiente'
@@ -94,7 +95,7 @@ const registerUserConnection = async (user, socket) => {
         return;
     }
 
-    const newUser = { type: user.type, userId: user.userId, location: user.location, socket};
+    const newUser = { type: user.type, userId: user.userId, location: user.location, socket };
     if (user.type === 'MEDICO') { // this could be handled with specific methods for each type of user to themself add to the list of users
         users.medics.push(newUser);
     } else if (user.type === 'PACIENTE') {
@@ -161,8 +162,8 @@ const getConnectedMedicById = async (medicId) => {
 /**
  * 
  * @param {UserConnected} userConnected
- * @param {string} [typeOfMessage='alert'] - Tipo de mensaje que se le enviara al usuario, por defecto es 'alert'
- * @param {string} [message='Sesion cerrada'] - Mensaje a enviar al usuario, por defecto es 'Sesion cerrada'
+ * @param {string} [typeOfMessage='alert'] 
+ * @param {string} [message='Sesion cerrada'] 
  * @returns {Promise<void>}
  */
 const removeConnectedUser = async (userConnected, typeOfMessage = 'alert', message = 'Sesion cerrada') => {
@@ -294,7 +295,7 @@ const removeRelation = (userConnected) => {
  */
 const findClosestMedic = async (medics, targetLocation) => {
 
-    
+
     let closest = null;
     let distance = 0;
 

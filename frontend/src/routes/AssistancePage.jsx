@@ -1,3 +1,4 @@
+// Pantalla principal de asistencia donde pacientes solicitan ayuda y médicos atienden emergencias
 import styles from './AssistancePage.module.css';
 import { useState } from 'react';
 import { RoundedSpecialityHeader } from '../components/RoundedSpecialityHeader';
@@ -58,7 +59,7 @@ const BusyClinicianView = ({ profile }) => {
             okButtonTitle: 'Finalizar',
             cancelButtonTitle: 'Cancelar'
         })
-        
+
         if (value) {
             assistanceService.endRequest();
         }
@@ -68,7 +69,7 @@ const BusyClinicianView = ({ profile }) => {
         <div className={styles.busyClinicianView}>
             <SpecialityHeader speciality={profile?.speciality} name={profile?.name} />
             {/* TODO: Display real destination */}
-            <Destination destination={'Facultad de Informática, UAQ Campus Juriquilla'} /> 
+            <Destination destination={'Facultad de Informática, UAQ Campus Juriquilla'} />
             <div className={styles.busyClinicianContent}>
                 <Map />
                 <EmergencyDetails
@@ -98,10 +99,10 @@ const AvailablePatientView = ({ emergencyTypes }) => {
         if (!emergencyTypes || emergencyTypes.length === 0) return;
 
         const selectedTypeObj = emergencyTypes.find(type => type.name == selectedType);
-        
+
         if (selectedTypeObj) {
-             const selectedId = selectedTypeObj.id;
-             assistanceService.createRequest({
+            const selectedId = selectedTypeObj.id;
+            assistanceService.createRequest({
                 emergencyTypeId: selectedId,
                 notes: notes,
                 initialLatitude: latitude,
@@ -113,7 +114,7 @@ const AvailablePatientView = ({ emergencyTypes }) => {
     return (
         <div className={styles.availablePatientView}>
             <PageTitle>Solicitar asistencia médica</PageTitle>
-            
+
             <div className={styles.availablePatientFormLabelContainer}>
                 <p className={styles.availablePatientFormLabelTitle}>Tipo de emergencia</p>
                 <p>Seleccione el que mejor describa su emergencia</p>
@@ -151,7 +152,7 @@ const WaitingPatientView = () => (
             <p>Tu solicitud está</p>
             <p className={styles.waitingPatientColorText}>Pendiente</p>
         </div>
-            <p>En breve te será asignado un médico</p>
+        <p>En breve te será asignado un médico</p>
     </div>
 );
 
@@ -163,7 +164,7 @@ const BusyPatientView = () => {
     if (!request || !counterpart) return <LoadingView message="Conectando con el médico..." />;
 
     const emergencyTypeObj = emergencyTypes.find(type => type.id == request.emergencyTypeId);
-    
+
     // Si los tipos de emergencia no han cargado, mostramos carga en lugar de explotar
     if (!emergencyTypeObj) return <LoadingView message="Cargando información..." />;
 
@@ -171,7 +172,7 @@ const BusyPatientView = () => {
         <div className={styles.busyPatientView}>
             <SpecialityHeader speciality={counterpart?.speciality} name={counterpart?.fullName} />
             {/* TODO: Display real destination */}
-            <Destination destination={'Facultad de Informática, UAQ Campus Juriquilla'} /> 
+            <Destination destination={'Facultad de Informática, UAQ Campus Juriquilla'} />
             <div className={styles.busyPatientContent}>
                 <Map />
                 <EmergencyDetails
@@ -190,11 +191,11 @@ export const AssistancePage = () => {
     const emergencyTypes = useEmergencyTypes();
     const { request } = useAssistanceService();
     const { counterpart } = useAssistanceService();
-    
+
     if (!tokenData) {
         return;
     }
-    
+
     const { type } = tokenData;
     const isWaiting = !!request;
     const isBusy = isWaiting && !!counterpart;
@@ -202,14 +203,14 @@ export const AssistancePage = () => {
     return (
         <main className={styles.assistancePage}>
             {
-                type == 'MEDICO' ? 
+                type == 'MEDICO' ?
                     isBusy ? <BusyClinicianView profile={profile} />
-                    : <AvailableClinicianView profile={profile} />
-                : type == 'PACIENTE' ?
-                    isBusy ? <BusyPatientView />
-                    : isWaiting ? <WaitingPatientView />
-                    : <AvailablePatientView emergencyTypes={emergencyTypes} />
-                : null
+                        : <AvailableClinicianView profile={profile} />
+                    : type == 'PACIENTE' ?
+                        isBusy ? <BusyPatientView />
+                            : isWaiting ? <WaitingPatientView />
+                                : <AvailablePatientView emergencyTypes={emergencyTypes} />
+                        : null
             }
         </main>
     );

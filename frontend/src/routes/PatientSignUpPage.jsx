@@ -1,3 +1,4 @@
+// Pantalla de registro para nuevos pacientes
 import styles from './PatientSignUpPage.module.css';
 import { useState } from 'react';
 import { Button } from '../components/Button';

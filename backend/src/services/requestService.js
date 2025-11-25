@@ -1,3 +1,4 @@
+// Servicio para gestionar solicitudes de asistencia médica
 const requestRepository = require('../repositories/requestRepository');
 
 
@@ -16,7 +17,7 @@ const typeOfRequest = Object.freeze({
 * @param {{emergencyTypeId: number, notes: string, initialLocation: string}} newRequestData
 */
 const createNewRequest = async (userWhoCreatesTheRequest, newRequestData) => {
-    const initialLocation =newRequestData.initialLatitude+','+newRequestData.initialLongitude;
+    const initialLocation = newRequestData.initialLatitude + ',' + newRequestData.initialLongitude;
     newRequestData.initialLocation = initialLocation;
     const request = await requestRepository.createRequest(userWhoCreatesTheRequest.userId, newRequestData);
     return request;
@@ -82,7 +83,7 @@ const endRequest = async (idRequest) => {
  * 
  * @returns {Promise<Request[]>}
  */
-const getAllPendingRequests = async () => { 
+const getAllPendingRequests = async () => {
     return await requestRepository.getAllPendingRequests();
 };
 

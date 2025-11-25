@@ -1,3 +1,4 @@
+// Pantalla principal de chat donde usuarios (pacientes y médicos) se comunican
 import styles from './ChatPage.module.css';
 import { useToken } from '../contexts/TokenContext';
 import { useAssistanceService } from '../contexts/AssistanceServiceContext';
@@ -41,7 +42,7 @@ const BusyPatientView = () => {
 export const ChatPage = () => {
     const { tokenData } = useToken();
     const { counterpart } = useAssistanceService();
-    
+
     if (!tokenData) {
         return;
     }
@@ -52,13 +53,13 @@ export const ChatPage = () => {
     return (
         <main className={styles.chatPage}>
             {
-                type == 'MEDICO' ? 
+                type == 'MEDICO' ?
                     isBusy ? <BusyClinicianView />
-                    : <AvailableClinicianView />
-                : type == 'PACIENTE' ?
-                    isBusy ? <BusyPatientView />
-                    : <AvailablePatientView />
-                : null
+                        : <AvailableClinicianView />
+                    : type == 'PACIENTE' ?
+                        isBusy ? <BusyPatientView />
+                            : <AvailablePatientView />
+                        : null
             }
         </main>
     );

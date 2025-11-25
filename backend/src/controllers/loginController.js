@@ -1,3 +1,4 @@
+// Controlador de autenticación para inicio de sesión de usuarios
 const express = require('express');
 const bcrypt = require('bcrypt');
 const { getUserAndTypeOfUserByEmail } = require('../repositories/UserRepository');

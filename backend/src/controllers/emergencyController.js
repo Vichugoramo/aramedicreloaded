@@ -1,13 +1,14 @@
+// Controlador para obtener tipos de emergencias disponibles
 const emergencyRepository = require('../repositories/emergencyRepository');
 
 
 const getAllEmergencies = async (req, res, next) => {
-    try{
+    try {
         const emergencyDataList = await emergencyRepository.findAllEmergencies();
         const emergencyList = emergencyDataList.map(convertEmergencyDataToEmergencyType);
-        const response = {emergencyTypes: emergencyList};
+        const response = { emergencyTypes: emergencyList };
         return res.json(response);
-    }catch(error){
+    } catch (error) {
         return next(error);
     }
 };
@@ -18,7 +19,7 @@ const getAllEmergencies = async (req, res, next) => {
  * @param {EmergencyData} emergencyData 
  * @returns {EmergencyType}
  */
-function convertEmergencyDataToEmergencyType(emergencyData){
+function convertEmergencyDataToEmergencyType(emergencyData) {
     return {
         id: emergencyData.id,
         name: emergencyData.nombre,
@@ -34,22 +35,22 @@ function convertEmergencyDataToEmergencyType(emergencyData){
 
 
 
- //* @param {EmergencyData} emergencyData 
+//* @param {EmergencyData} emergencyData 
 
 
- /**
-  * @typedef {Object} EmergencyData
-  * @property {number} id
-  * @property {string} nombre
-  * @property {string} descripcion
-  */
+/**
+ * @typedef {Object} EmergencyData
+ * @property {number} id
+ * @property {string} nombre
+ * @property {string} descripcion
+ */
 
- /**
-  * @typedef {Object} EmergencyType
-  * @property {number} id
-  * @property {string} name
-  * @property {string} description
-  */
+/**
+ * @typedef {Object} EmergencyType
+ * @property {number} id
+ * @property {string} name
+ * @property {string} description
+ */
 
 module.exports = {
     getAllEmergencies

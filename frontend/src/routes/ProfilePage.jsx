@@ -1,3 +1,4 @@
+// Pantalla de perfil del usuario donde se muestran sus datos personales
 import styles from './ProfilePage.module.css';
 import { PageTitle } from '../components/PageTitle';
 import { InfoItem } from '../components/InfoItem';
@@ -86,7 +87,7 @@ export const ProfilePage = () => {
         <main className={styles.profilePage}>
             <PageTitle>Perfil</PageTitle>
             <div className={styles.infoContainer}>
-                { items.map(item => {
+                {items.map(item => {
                     const { label, name, format } = item;
                     let value = profile?.[name];
 

@@ -1,3 +1,4 @@
+// Archivo principal del servidor backend que configura Express, Socket.IO y las rutas
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -48,9 +49,9 @@ async function startServer() {
     app.use(fileRoutes);
     app.use('/uploads', express.static('uploads'));
     io.on('connection', socketController(io));
-    
-    app.use( (()=>{try{return require('./test/connectedUsersEndpoint')}catch(e){return (req, res, next)=>{next()}}})()  ) // DELETE TEST
-    
+
+    app.use((() => { try { return require('./test/connectedUsersEndpoint') } catch (e) { return (req, res, next) => { next() } } })()) // DELETE TEST
+
     app.use(authMiddleware);
     // routes which need authentication
     app.use(userRoutes);

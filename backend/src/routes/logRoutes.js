@@ -1,12 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const logController = require("../controllers/logController");
-const auth = require("../middlewares/auth"); // Tu middleware de autenticación
+const auth = require("../middlewares/auth");
 const verifyUserRole = require("../middlewares/verifyUserRole");
-
-// --- Rutas para el Paciente (requiere rol PACIENTE) ---
-
-// Obtener todos los registros del paciente logueado
 router.get(
     '/logs',
     auth,
@@ -22,7 +18,7 @@ router.post(
     logController.createLog
 );
 
-// Actualizar un registro (asegura que el paciente sea el dueño)
+// Actualizar un registro
 router.put(
     '/logs/:logId',
     auth,
@@ -30,16 +26,13 @@ router.put(
     logController.updateLog
 );
 
-// Eliminar un registro (asegura que el paciente sea el dueño)
+// Eliminar un registro
 router.delete(
     '/logs/:logId',
     auth,
     verifyUserRole(['PACIENTE']),
     logController.deleteLog
 );
-
-// --- Ruta para el Médico (requiere rol MEDICO) ---
-
 // Obtener los registros de un paciente específico
 router.get(
     '/logs/:patientId',

@@ -1,3 +1,4 @@
+// Servicio para obtener datos de médicos con sus especialidades
 const medicRepository = require('../repositories/medicRepository');
 const specialityRepository = require('../repositories/specialityRepository');
 
@@ -6,8 +7,8 @@ const specialityRepository = require('../repositories/specialityRepository');
  * @param {Number} medicId
  * @returns {Promise<MedicDataWithSpecilities | null>}
  */
-const getMedicDataById = async (medicId)=>{
-    const medic = await medicRepository.getMedicDataById(medicId); 
+const getMedicDataById = async (medicId) => {
+    const medic = await medicRepository.getMedicDataById(medicId);
     const emergenciesSpecialities = await specialityRepository.getSpecilitiesAndEmergenciesAssociatedWithMedicData(medicId);
 
     return {

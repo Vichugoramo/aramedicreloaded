@@ -1,3 +1,4 @@
+// Controlador para obtener datos de perfil del usuario autenticado
 const userRepository = require('../repositories/userRepository');
 
 

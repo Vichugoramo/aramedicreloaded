@@ -1,3 +1,4 @@
+// Pantalla de inicio de sesión para usuarios registrados
 import styles from './LoginPage.module.css';
 import Logo from '../assets/logo.svg?react';
 import DoctorsImage from '../assets/doctors-rafiki.svg?react';

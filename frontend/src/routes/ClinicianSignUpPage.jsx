@@ -1,3 +1,4 @@
+// Pantalla de registro para nuevos médicos
 import styles from './ClinicianSignUpPage.module.css';
 import { BackButton } from '../components/BackButton';
 import { Input } from '../components/Input';
@@ -121,20 +122,20 @@ export const ClinicianSignUpPage = () => {
                 value={formData.licence}
                 setterFunction={setFormData}
             />
-            { specialities ? (
-                    <Select
-                        color='var(--secondary)'
-                        label='Especialidad'
-                        name='speciality'
-                        value={formData.speciality}
-                        setterFunction={setFormData}
-                        options={specialities.map(s => s.name)}
-                    />
-                ) : (
-                    <InfoItem label={'Especialidad'} textColor={'#555'}>
-                        Cargando especialidades...
-                    </InfoItem>
-                )
+            {specialities ? (
+                <Select
+                    color='var(--secondary)'
+                    label='Especialidad'
+                    name='speciality'
+                    value={formData.speciality}
+                    setterFunction={setFormData}
+                    options={specialities.map(s => s.name)}
+                />
+            ) : (
+                <InfoItem label={'Especialidad'} textColor={'#555'}>
+                    Cargando especialidades...
+                </InfoItem>
+            )
             }
             <Input
                 color='var(--secondary)'

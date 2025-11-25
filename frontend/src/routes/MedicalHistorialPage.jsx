@@ -1,16 +1,15 @@
-import styles from './ProfilePage.module.css'; // Reusamos los estilos
-import localStyles from './MedicalHistoryPage.module.css'; // Estilos propios
+// Pantalla del historial médico del paciente con bitácora y documentos
+import styles from './ProfilePage.module.css';
+import localStyles from './MedicalHistoryPage.module.css';
 import { PageTitle } from '../components/PageTitle';
 import { InfoItem } from '../components/InfoItem';
-import { Button } from '../components/Button'; // Importamos Button
+import { Button } from '../components/Button';
 import { BackButton } from '../components/BackButton';
 import { useAPI } from '../contexts/APIContext';
 import { useToken } from '../contexts/TokenContext';
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router';
 import { Dialog } from '@capacitor/dialog';
-
-// --- (Sección 1: Historial Médico - Preguntas Fijas) ---
 
 const medicalQuestions = [
     {
@@ -47,42 +46,30 @@ const formatAnswer = (historyData, question) => {
     return 'No registrado';
 };
 
-// --- (Fin Sección 1) ---
-
 
 export const MedicalHistoryPage = () => {
     const { fetchApi, apiUrl } = useAPI();
     const { tokenData } = useToken();
     const location = useLocation();
 
-    // --- (Lógica de Roles) ---
-    // Si location.state tiene patientId, significa que un médico está viendo.
     const patientId = location.state?.patientId;
 
-    // Si NO hay patientId, es el paciente viendo su propia página.
     const isPatient = !patientId;
 
-    // --- (Estados para el Historial Fijo) ---
     const [history, setHistory] = useState(null);
     const [loadingHistory, setLoadingHistory] = useState(true);
 
-    // --- (NUEVOS ESTADOS para el Registro de Logs) ---
     const [logs, setLogs] = useState([]);
     const [loadingLogs, setLoadingLogs] = useState(true);
     const [newLogDate, setNewLogDate] = useState('');
     const [newLogDesc, setNewLogDesc] = useState('');
 
-    // Estado para saber si estamos editando (null = creando, log.id = editando)
     const [editingLogId, setEditingLogId] = useState(null);
 
-    // --- (NUEVOS ESTADOS para Archivos PDF) ---
     const [files, setFiles] = useState([]);
     const [loadingFiles, setLoadingFiles] = useState(true);
 
-    // --- (Efecto para Cargar AMBOS tipos de datos) ---
     useEffect(() => {
-        // 1. Cargar Historial (Preguntas S/N)
-        // Si es médico, usa el ID; si es paciente, usa su propio token (endpoint 'record')
         const historyEndpoint = patientId ? `record/${patientId}` : 'record';
 
         setLoadingHistory(true);
@@ -90,7 +77,7 @@ export const MedicalHistoryPage = () => {
             .then(data => setHistory(data))
             .catch(err => {
                 if (err?.message?.includes('404')) {
-                    setHistory(null); // No es un error, solo no hay datos
+                    setHistory(null);
                 } else {
                     console.error("Error cargando historial:", err);
                     Dialog.alert({ title: 'Error', message: 'No se pudo cargar el historial.' });
@@ -98,8 +85,6 @@ export const MedicalHistoryPage = () => {
             })
             .finally(() => setLoadingHistory(false));
 
-        // 2. Cargar Logs (La nueva bitácora)
-        // Si es médico, usa el ID; si es paciente, usa su propio token (endpoint 'logs')
         const logsEndpoint = patientId ? `logs/${patientId}` : 'logs';
 
         setLoadingLogs(true);
@@ -110,10 +95,6 @@ export const MedicalHistoryPage = () => {
                 Dialog.alert({ title: 'Error', message: 'No se pudo cargar el registro médico.' });
             })
             .finally(() => setLoadingLogs(false));
-
-        // 3. Cargar Archivos PDF
-        // Determinar el ID del paciente a consultar
-        // Si es médico viendo paciente, usa patientId; si es paciente, usa su propio ID
         const targetPatientId = patientId || tokenData?.userId;
 
         if (targetPatientId) {
@@ -122,7 +103,6 @@ export const MedicalHistoryPage = () => {
                 .then(data => setFiles(data))
                 .catch(err => {
                     console.error("Error cargando archivos:", err);
-                    // No mostramos alerta aquí porque puede ser que simplemente no haya archivos
                     setFiles([]);
                 })
                 .finally(() => setLoadingFiles(false));
@@ -133,16 +113,12 @@ export const MedicalHistoryPage = () => {
 
     }, [fetchApi, patientId, tokenData?.userId]);
 
-    // --- (Nuevos Handlers para CRUD de Logs) ---
-
-    // Limpia el formulario
     const handleClearForm = () => {
         setNewLogDate('');
         setNewLogDesc('');
         setEditingLogId(null);
     };
 
-    // Maneja la creación o actualización
     const handleAddOrUpdateLog = () => {
         if (!newLogDate || !newLogDesc) {
             Dialog.alert({ title: 'Error', message: 'Por favor, completa la fecha y la descripción.' });
@@ -152,10 +128,8 @@ export const MedicalHistoryPage = () => {
         const logData = { log_date: newLogDate, description: newLogDesc };
 
         if (editingLogId) {
-            // --- Lógica de ACTUALIZAR (PUT) ---
             fetchApi(`logs/${editingLogId}`, 'PUT', logData)
                 .then(updatedLog => {
-                    // Reemplaza el log antiguo con el actualizado
                     setLogs(logs.map(log =>
                         log.id === editingLogId ? { ...log, ...updatedLog } : log
                     ));
@@ -166,10 +140,8 @@ export const MedicalHistoryPage = () => {
                     Dialog.alert({ title: 'Error', message: 'No se pudo actualizar el registro.' });
                 });
         } else {
-            // --- Lógica de CREAR (POST) ---
             fetchApi('logs', 'POST', logData)
                 .then(newLog => {
-                    // Añade el nuevo log al inicio de la lista (ordenada por fecha)
                     setLogs([newLog, ...logs].sort((a, b) => new Date(b.log_date) - new Date(a.log_date)));
                     handleClearForm();
                 })
@@ -180,7 +152,6 @@ export const MedicalHistoryPage = () => {
         }
     };
 
-    // Maneja la eliminación
     const handleDeleteLog = (logId) => {
         Dialog.confirm({
             title: 'Confirmar',
@@ -189,7 +160,6 @@ export const MedicalHistoryPage = () => {
             if (result.value) {
                 fetchApi(`logs/${logId}`, 'DELETE')
                     .then(() => {
-                        // Filtra el log eliminado del estado
                         setLogs(logs.filter(log => log.id !== logId));
                     })
                     .catch(err => {
@@ -200,16 +170,13 @@ export const MedicalHistoryPage = () => {
         });
     };
 
-    // Prepara el formulario para editar un log existente
     const handleStartEdit = (log) => {
         setEditingLogId(log.id);
-        setNewLogDate(log.log_date); // El repo ya lo formatea a YYYY-MM-DD
+        setNewLogDate(log.log_date);
         setNewLogDesc(log.description);
-        // Opcional: scroll al formulario
         window.scrollTo(0, document.body.scrollHeight);
     };
 
-    // Formateador de fecha simple para mostrar
     const formatDate = (dateString) => {
         try {
             const options = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' };
@@ -219,14 +186,10 @@ export const MedicalHistoryPage = () => {
         }
     };
 
-    // --- (Renderizado del Componente) ---
-
     return (
         <main className={styles.profilePage}>
 
-            {/* --- Encabezado y Botón Atrás --- */}
             <div className={styles.titleContainer}>
-                {/* El botón atrás solo aparece si el médico está viendo */}
                 {patientId && (
                     <div className={styles.backButtonContainer}>
                         <BackButton />
@@ -235,7 +198,6 @@ export const MedicalHistoryPage = () => {
                 <PageTitle>Historial Médico</PageTitle>
             </div>
 
-            {/* --- Sección 1: Historial Fijo (S/N) --- */}
             <div className={styles.infoContainer}>
                 {loadingHistory ? (
                     <InfoItem label="Cargando...">...</InfoItem>
@@ -254,11 +216,9 @@ export const MedicalHistoryPage = () => {
                 )}
             </div>
 
-            {/* --- Sección 2: NUEVO Registro Médico (Bitácora) --- */}
             <div className={localStyles.logSection}>
                 <PageTitle>Bitácora Médica</PageTitle>
 
-                {/* Formulario (Solo para Paciente) */}
                 {isPatient && (
                     <div className={localStyles.logForm}>
                         <p className={localStyles.formLabel}>{editingLogId ? 'Editando Registro' : 'Nuevo Registro'}</p>
@@ -288,7 +248,6 @@ export const MedicalHistoryPage = () => {
                     </div>
                 )}
 
-                {/* Lista de Logs (Para ambos roles) */}
                 <div className={`${styles.infoContainer} ${localStyles.logList}`}>
                     {loadingLogs ? (
                         <InfoItem label="Cargando registros...">...</InfoItem>
@@ -304,7 +263,6 @@ export const MedicalHistoryPage = () => {
                                     {log.description}
                                 </InfoItem>
 
-                                {/* Botones de CRUD (Solo para Paciente) */}
                                 {isPatient && (
                                     <div className={localStyles.logActions}>
                                         <button onClick={() => handleStartEdit(log)} className={localStyles.actionButton}>
@@ -321,11 +279,9 @@ export const MedicalHistoryPage = () => {
                 </div>
             </div>
 
-            {/* --- Sección 3: NUEVO Documentos Médicos (PDFs) --- */}
             <div className={localStyles.logSection}>
                 <PageTitle>Documentos Médicos</PageTitle>
 
-                {/* Lista de Documentos (Para ambos roles) */}
                 <div className={`${styles.infoContainer} ${localStyles.logList}`}>
                     {loadingFiles ? (
                         <InfoItem label="Cargando documentos...">...</InfoItem>

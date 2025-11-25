@@ -3,7 +3,7 @@ const db = require('../config/db').getDB();
 /**
  * Create a medical record for a given patient
  * @param {Number} patientId
- * @param {Object} record - contiene question1..4 y details1..4
+ * @param {Object} record
  * @returns {Promise<{id: Number, patientId: Number}>}
  */
 const createRecord = async (patientId, record) => { 
@@ -15,7 +15,6 @@ const createRecord = async (patientId, record) => {
     `;
 
     try{
-        // Mapeamos los valores en el orden correcto
         const values = [
             patientId, 
             record.question1, record.details1 || null, 
@@ -26,7 +25,6 @@ const createRecord = async (patientId, record) => {
 
         const [result] = await db.query(insertRecordQuery, values);
         
-        // CORRECCIÓN: El ID del registro es el patientId, no un auto-incremento
         return { id: patientId, patientId };
 
     } catch(err){
@@ -37,11 +35,10 @@ const createRecord = async (patientId, record) => {
 
 /**
  * Get record by Patient ID
- * @param {Number} id (Este 'id' es el patientId)
+ * @param {Number} id 
  * @returns {Promise<HistorialData>}
  */
 const getRecordById = async (id) => {
-    // CORRECCIÓN: Cambiamos 'h.id' por 'h.id_paciente'
     const query = `
         SELECT 
             h.id_paciente, 
@@ -57,8 +54,6 @@ const getRecordById = async (id) => {
     const record = result[0];
     
     if (!record) return null;
-
-    // CORRECCIÓN: Mapeamos la columna correcta
     return {
         id_paciente: record.id_paciente,
         question1: record.question1,

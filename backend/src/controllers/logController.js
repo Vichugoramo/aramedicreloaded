@@ -1,6 +1,6 @@
 const logRepository = require("../repositories/logRepository");
 
-// (Paciente) Obtiene sus propios registros
+// Obtiene registros
 const getPatientLogs = async (req, res, next) => {
     try {
         const patientId = req.user.userId;
@@ -72,7 +72,7 @@ const deleteLog = async (req, res, next) => {
         }
 
         await logRepository.deleteLog(logId);
-        res.status(204).send(); // Sin contenido
+        res.status(204).send();
     } catch (error) {
         next(error);
     }

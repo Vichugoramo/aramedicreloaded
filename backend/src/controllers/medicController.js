@@ -1,3 +1,4 @@
+// Controlador para crear nuevos médicos en el sistema
 const medicRepository = require('../repositories/medicRepository');
 const { generateToken } = require('../utils/tokenUtils');
 
@@ -13,9 +14,9 @@ const BAD_REQUEST_RESPONSE = { message: "Bad fields, check your data" };
  */
 const createmedic = async (req, res, next) => {
 
-;
+    ;
     const medic = req.body;
-    if(
+    if (
         !medic.name ||
         !medic.lastname ||
         !medic.password ||
@@ -24,22 +25,22 @@ const createmedic = async (req, res, next) => {
         !medic.licence ||
         !medic.idSpeciality ||
         medic.licence.length > 10
-    ){
+    ) {
         return res.status(400).json(BAD_REQUEST_RESPONSE);
     }
 
-    try{
+    try {
 
         const medicCreated = await medicRepository.createMedic(medic);
         const token = generateToken(medicCreated.id, "MEDICO");
-    
+
         const response = {
             message: "medic created",
             token
         };
-    
+
         return res.status(201).json(response);
-    }catch(error){
+    } catch (error) {
         return next(error);
     }
 };

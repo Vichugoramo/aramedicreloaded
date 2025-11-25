@@ -1,3 +1,4 @@
+// Pantalla de configuración de la aplicación
 import styles from './SettingsPage.module.css';
 import { PageTitle } from '../components/PageTitle';
 import { BackButton } from '../components/BackButton';
@@ -6,7 +7,7 @@ import { useAPI } from '../contexts/APIContext';
 
 export const SettingsPage = () => {
     const { apiUrl, setApiUrl } = useAPI();
-    
+
     return (
         <main className={styles.settingsPage}>
             <div className={styles.titleContainer}>
@@ -20,7 +21,7 @@ export const SettingsPage = () => {
                 label='URL de la API'
                 value={apiUrl}
                 onChange={e => setApiUrl(e.target.value)}
-                setterFunction={()=>{}}
+                setterFunction={() => { }}
             />
         </main>
     );

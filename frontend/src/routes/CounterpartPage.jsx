@@ -1,3 +1,4 @@
+// Pantalla donde el médico ve la información del paciente y el paciente ve los datos del médico
 import React from 'react';
 import styles from './CounterpartPage.module.css';
 import { PageTitle } from '../components/PageTitle';

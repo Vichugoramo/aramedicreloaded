@@ -30,7 +30,6 @@ const uploadFile = async (req, res, next) => {
 const getFilesByPatient = async (req, res, next) => {
     try {
         const { patientId } = req.params;
-        // Seguridad: Un paciente solo puede ver sus propios archivos
         if (req.user.type === 'PACIENTE' && req.user.userId != patientId) {
             return res.status(403).json({ message: "Acceso denegado" });
         }

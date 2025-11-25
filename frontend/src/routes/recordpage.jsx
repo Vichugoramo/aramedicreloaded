@@ -1,3 +1,4 @@
+// Pantalla de registro del historial médico inicial del paciente
 import styles from './PatientSignUpPage.module.css';
 import { useState } from 'react';
 import { Button } from '../components/Button';
@@ -13,10 +14,10 @@ export const RecordPage = () => {
     const { fetchApi } = useAPI();
     const { setToken } = useToken();
     const location = useLocation();
-    
+
     const tokenFromSignup = location?.state?.token;
     const boxoptions = ['Si', 'No'];
-    
+
     // 1. Actualizamos el estado para tener un campo de texto por cada pregunta
     const [formData, setFormData] = useState({
         question1: undefined, details1: '',
@@ -59,7 +60,7 @@ export const RecordPage = () => {
         const requestBody = {
             question1: formData.question1.toLowerCase() === 'si' ? 'S' : 'N',
             details1: formData.details1, // Se envía el texto (o vacío si fue No)
-            
+
             question2: formData.question2.toLowerCase() === 'si' ? 'S' : 'N',
             details2: formData.details2,
 
@@ -182,7 +183,7 @@ export const RecordPage = () => {
                     setterFunction={setFormData}
                 />
             )}
-        
+
             <Button onClick={onConfirm}>
                 Confirmar
             </Button>
