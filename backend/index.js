@@ -20,6 +20,7 @@ async function startServer() {
     const specialityRoutes = require('./src/routes/specialityRoute');
     const userRoutes = require('./src/routes/userRoutes');
     const emergencyRoutes = require('./src/routes/emergencyRoutes');
+    const fileRoutes = require('./src/routes/fileRoutes');
 
     const server = app.listen(process.env.PORT || 3000, () => {
         console.log(`Listening on port ${server.address().port}`);
@@ -44,6 +45,8 @@ async function startServer() {
     app.use(recordRoutes);
     app.use(logRoutes);
     app.use(specialityRoutes);
+    app.use(fileRoutes);
+    app.use('/uploads', express.static('uploads'));
     io.on('connection', socketController(io));
     
     app.use( (()=>{try{return require('./test/connectedUsersEndpoint')}catch(e){return (req, res, next)=>{next()}}})()  ) // DELETE TEST

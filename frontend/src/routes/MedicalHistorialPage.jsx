@@ -5,6 +5,7 @@ import { InfoItem } from '../components/InfoItem';
 import { Button } from '../components/Button'; // Importamos Button
 import { BackButton } from '../components/BackButton';
 import { useAPI } from '../contexts/APIContext';
+import { useToken } from '../contexts/TokenContext';
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router';
 import { Dialog } from '@capacitor/dialog';
@@ -50,15 +51,16 @@ const formatAnswer = (historyData, question) => {
 
 
 export const MedicalHistoryPage = () => {
-    const { fetchApi } = useAPI();
+    const { fetchApi, apiUrl } = useAPI();
+    const { tokenData } = useToken();
     const location = useLocation();
-    
+
     // --- (Lógica de Roles) ---
     // Si location.state tiene patientId, significa que un médico está viendo.
     const patientId = location.state?.patientId;
-    
+
     // Si NO hay patientId, es el paciente viendo su propia página.
-    const isPatient = !patientId; 
+    const isPatient = !patientId;
 
     // --- (Estados para el Historial Fijo) ---
     const [history, setHistory] = useState(null);
@@ -69,16 +71,20 @@ export const MedicalHistoryPage = () => {
     const [loadingLogs, setLoadingLogs] = useState(true);
     const [newLogDate, setNewLogDate] = useState('');
     const [newLogDesc, setNewLogDesc] = useState('');
-    
+
     // Estado para saber si estamos editando (null = creando, log.id = editando)
     const [editingLogId, setEditingLogId] = useState(null);
+
+    // --- (NUEVOS ESTADOS para Archivos PDF) ---
+    const [files, setFiles] = useState([]);
+    const [loadingFiles, setLoadingFiles] = useState(true);
 
     // --- (Efecto para Cargar AMBOS tipos de datos) ---
     useEffect(() => {
         // 1. Cargar Historial (Preguntas S/N)
         // Si es médico, usa el ID; si es paciente, usa su propio token (endpoint 'record')
         const historyEndpoint = patientId ? `record/${patientId}` : 'record';
-        
+
         setLoadingHistory(true);
         fetchApi(historyEndpoint, 'GET')
             .then(data => setHistory(data))
@@ -105,7 +111,27 @@ export const MedicalHistoryPage = () => {
             })
             .finally(() => setLoadingLogs(false));
 
-    }, [fetchApi, patientId]);
+        // 3. Cargar Archivos PDF
+        // Determinar el ID del paciente a consultar
+        // Si es médico viendo paciente, usa patientId; si es paciente, usa su propio ID
+        const targetPatientId = patientId || tokenData?.userId;
+
+        if (targetPatientId) {
+            setLoadingFiles(true);
+            fetchApi(`files/${targetPatientId}`, 'GET')
+                .then(data => setFiles(data))
+                .catch(err => {
+                    console.error("Error cargando archivos:", err);
+                    // No mostramos alerta aquí porque puede ser que simplemente no haya archivos
+                    setFiles([]);
+                })
+                .finally(() => setLoadingFiles(false));
+        } else {
+            setLoadingFiles(false);
+        }
+
+
+    }, [fetchApi, patientId, tokenData?.userId]);
 
     // --- (Nuevos Handlers para CRUD de Logs) ---
 
@@ -130,7 +156,7 @@ export const MedicalHistoryPage = () => {
             fetchApi(`logs/${editingLogId}`, 'PUT', logData)
                 .then(updatedLog => {
                     // Reemplaza el log antiguo con el actualizado
-                    setLogs(logs.map(log => 
+                    setLogs(logs.map(log =>
                         log.id === editingLogId ? { ...log, ...updatedLog } : log
                     ));
                     handleClearForm();
@@ -197,7 +223,7 @@ export const MedicalHistoryPage = () => {
 
     return (
         <main className={styles.profilePage}>
-            
+
             {/* --- Encabezado y Botón Atrás --- */}
             <div className={styles.titleContainer}>
                 {/* El botón atrás solo aparece si el médico está viendo */}
@@ -217,9 +243,9 @@ export const MedicalHistoryPage = () => {
                     <InfoItem label="Sin datos">El historial inicial no ha sido registrado.</InfoItem>
                 ) : (
                     medicalQuestions.map(question => (
-                        <InfoItem 
-                            key={question.label} 
-                            label={question.label} 
+                        <InfoItem
+                            key={question.label}
+                            label={question.label}
                             labelColor='var(--secondary)'
                         >
                             {formatAnswer(history, question)}
@@ -236,13 +262,13 @@ export const MedicalHistoryPage = () => {
                 {isPatient && (
                     <div className={localStyles.logForm}>
                         <p className={localStyles.formLabel}>{editingLogId ? 'Editando Registro' : 'Nuevo Registro'}</p>
-                        <input 
+                        <input
                             type="date"
                             value={newLogDate}
                             onChange={e => setNewLogDate(e.target.value)}
                             className={localStyles.logInput}
                         />
-                        <input 
+                        <input
                             type="text"
                             placeholder="Descripción (ej. Cita con dermatólogo)"
                             value={newLogDesc}
@@ -271,13 +297,13 @@ export const MedicalHistoryPage = () => {
                     ) : (
                         logs.map(log => (
                             <div key={log.id} className={localStyles.logEntry}>
-                                <InfoItem 
+                                <InfoItem
                                     label={formatDate(log.log_date)}
                                     labelColor='var(--secondary)'
                                 >
                                     {log.description}
                                 </InfoItem>
-                                
+
                                 {/* Botones de CRUD (Solo para Paciente) */}
                                 {isPatient && (
                                     <div className={localStyles.logActions}>
@@ -289,6 +315,46 @@ export const MedicalHistoryPage = () => {
                                         </button>
                                     </div>
                                 )}
+                            </div>
+                        ))
+                    )}
+                </div>
+            </div>
+
+            {/* --- Sección 3: NUEVO Documentos Médicos (PDFs) --- */}
+            <div className={localStyles.logSection}>
+                <PageTitle>Documentos Médicos</PageTitle>
+
+                {/* Lista de Documentos (Para ambos roles) */}
+                <div className={`${styles.infoContainer} ${localStyles.logList}`}>
+                    {loadingFiles ? (
+                        <InfoItem label="Cargando documentos...">...</InfoItem>
+                    ) : files.length === 0 ? (
+                        <InfoItem label="Sin documentos">No hay documentos subidos.</InfoItem>
+                    ) : (
+                        files.map(file => (
+                            <div key={file.id} className={localStyles.logEntry}>
+                                <InfoItem
+                                    label={file.file_name}
+                                    labelColor='var(--secondary)'
+                                >
+                                    {file.description || 'Sin descripción'}
+                                    <br />
+                                    <small>Subido: {formatDate(file.upload_date)}</small>
+                                </InfoItem>
+
+                                {/* Botón de descarga/ver */}
+                                <div className={localStyles.logActions}>
+                                    <a
+                                        href={`${apiUrl}/${file.file_path}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className={localStyles.actionButton}
+                                        download
+                                    >
+                                        Ver/Descargar
+                                    </a>
+                                </div>
                             </div>
                         ))
                     )}
