@@ -313,3 +313,17 @@ CREATE TABLE medical_logs (
     ON DELETE CASCADE
     
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE IF NOT EXISTS `medical_files` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `id_paciente` INT NOT NULL,
+  `id_medico` INT NOT NULL,
+  `file_name` VARCHAR(255) NOT NULL,
+  `file_path` VARCHAR(500) NOT NULL,
+  `description` TEXT NULL,
+  `upload_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_medical_files_paciente` FOREIGN KEY (`id_paciente`) REFERENCES `pacientes` (`id_usuario`) ON DELETE CASCADE,
+  CONSTRAINT `fk_medical_files_medico` FOREIGN KEY (`id_medico`) REFERENCES `medicos` (`id_usuario`) ON DELETE CASCADE
+)
+
